@@ -1,0 +1,2884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RepConnect — Practitioner Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   REPCONNECT — CSS VARIABLES & RESET
+   ============================================ */
+:root {
+  --primary: #0B6E4F;
+  --primary-light: #0D8C65;
+  --primary-dark: #094D38;
+  --primary-50: rgba(11,110,79,0.05);
+  --primary-100: rgba(11,110,79,0.1);
+  --primary-200: rgba(11,110,79,0.2);
+  --accent: #E8963E;
+  --accent-light: #F5A94F;
+  --accent-dark: #D4822A;
+  --bg: #F8F9FA;
+  --bg-white: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F1F3F5;
+  --border: #E2E8F0;
+  --border-light: #EDF2F7;
+  --text-primary: #1A202C;
+  --text-secondary: #4A5568;
+  --text-muted: #A0AEC0;
+  --text-white: #FFFFFF;
+  --success: #38A169;
+  --warning: #E8963E;
+  --danger: #E53E3E;
+  --info: #3182CE;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --transition: all 0.2s ease;
+  --transition-slow: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; font-family: inherit; }
+input, textarea, select { font-family: inherit; }
+img { max-width: 100%; }
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.hidden { display: none !important; }
+
+/* ============================================
+   AUTH SCREENS
+   ============================================ */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F0FFF4 0%, #EBF8FF 50%, #F7FAFC 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(11,110,79,0.06) 0%, transparent 70%);
+}
+
+.auth-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,150,62,0.06) 0%, transparent 70%);
+}
+
+.auth-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-logo .logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: var(--primary);
+  border-radius: 16px;
+  margin-bottom: 16px;
+}
+
+.auth-logo .logo-mark svg {
+  width: 28px;
+  height: 28px;
+  fill: white;
+}
+
+.auth-logo h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.auth-logo p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--text-primary);
+  background: var(--bg);
+  transition: var(--transition);
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  background: var(--bg-white);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-primary {
+  padding: 14px 24px;
+  background: var(--primary);
+  color: var(--text-white);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  transition: var(--transition);
+  letter-spacing: 0.2px;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  padding: 14px 24px;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-200);
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.auth-footer a {
+  color: var(--primary);
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.auth-footer a:hover {
+  color: var(--primary-light);
+}
+
+.nutridyn-link {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  background: var(--primary-50);
+  border-radius: var(--radius-sm);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+  margin-top: 4px;
+}
+
+.nutridyn-link:hover {
+  background: var(--primary-100);
+}
+
+.pending-message {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.pending-message .pending-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--warning);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.pending-message h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.pending-message p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.auth-error {
+  background: #FFF5F5;
+  color: var(--danger);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  border: 1px solid #FED7D7;
+  display: none;
+}
+
+/* ============================================
+   MAIN APP LAYOUT
+   ============================================ */
+.app-wrapper {
+  display: none;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.app-wrapper.active {
+  display: flex;
+}
+
+/* ============================================
+   TOP NAVIGATION
+   ============================================ */
+.top-nav {
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.92);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-brand .brand-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-brand .brand-mark svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+}
+
+.nav-brand span {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  background: none;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.nav-link.active {
+  color: var(--primary);
+  background: var(--primary-50);
+}
+
+.nav-link .badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-avatar:hover {
+  transform: scale(1.05);
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  padding: 8px;
+  color: var(--text-primary);
+}
+
+.mobile-menu-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Mobile nav */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+}
+
+.mobile-nav.active { display: block; }
+
+.mobile-nav-inner {
+  background: var(--bg-white);
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mobile-nav-inner .nav-link {
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  width: 100%;
+}
+
+/* ============================================
+   PAGE SECTIONS
+   ============================================ */
+.page-section { display: none; }
+.page-section.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.page-header h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.page-header p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-top: 6px;
+}
+
+/* ============================================
+   FEED
+   ============================================ */
+.feed-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+  align-items: start;
+}
+
+.feed-main { display: flex; flex-direction: column; gap: 20px; }
+
+/* Post Composer */
+.post-composer {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.composer-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.composer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.composer-input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.composer-input:hover {
+  border-color: var(--primary-200);
+}
+
+/* Post Composer Expanded */
+.composer-expanded {
+  display: none;
+}
+
+.composer-expanded.active {
+  display: block;
+}
+
+.composer-expanded textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg);
+  resize: vertical;
+  outline: none;
+  transition: var(--transition);
+}
+
+.composer-expanded textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.composer-title-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg);
+  outline: none;
+  margin-bottom: 12px;
+  transition: var(--transition);
+}
+
+.composer-title-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-btn:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-200);
+  color: var(--primary);
+}
+
+.composer-category-select {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg);
+  outline: none;
+  cursor: pointer;
+}
+
+.toolbar-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-post {
+  padding: 8px 20px;
+  background: var(--primary);
+  color: white;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-post:hover {
+  background: var(--primary-light);
+}
+
+.pin-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 20px;
+  transition: var(--transition);
+}
+
+.pin-toggle:hover { color: var(--accent); }
+.pin-toggle.active { color: var(--accent); }
+
+/* Link/embed input */
+.composer-link-input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg);
+  outline: none;
+  margin-top: 12px;
+  display: none;
+  transition: var(--transition);
+}
+
+.composer-link-input:focus {
+  border-color: var(--primary);
+}
+
+.composer-link-input.active { display: block; }
+
+/* Feed Filters */
+.feed-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.filter-chip:hover {
+  border-color: var(--primary-200);
+  color: var(--primary);
+}
+
+.filter-chip.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Post Card */
+.post-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: var(--transition);
+}
+
+.post-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.post-card.pinned {
+  border-left: 3px solid var(--accent);
+}
+
+.post-pinned-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.post-author-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.post-author-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.post-author-info span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.post-category {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cat-protocols { background: #EBF8FF; color: #2B6CB0; }
+.cat-product { background: #F0FFF4; color: #276749; }
+.cat-marketing { background: #FEFCBF; color: #975A16; }
+.cat-training { background: #FAF5FF; color: #6B46C1; }
+.cat-labs { background: #FFF5F5; color: #C53030; }
+.cat-ordering { background: #E6FFFA; color: #234E52; }
+.cat-announcements { background: #FFF5EB; color: #C05621; }
+.cat-general { background: #F7FAFC; color: #4A5568; }
+
+.post-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+.post-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.post-body a {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.post-body a:hover {
+  text-decoration: underline;
+}
+
+.post-embed {
+  margin-top: 16px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #000;
+}
+
+.post-embed iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: none;
+}
+
+.post-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.post-link:hover {
+  background: var(--primary-50);
+}
+
+.post-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.post-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: var(--transition);
+}
+
+.post-action:hover {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.post-action svg { width: 16px; height: 16px; }
+
+/* Comments */
+.post-comments {
+  margin-top: 14px;
+  display: none;
+}
+
+.post-comments.active { display: block; }
+
+.comment {
+  display: flex;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.comment-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--info);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.comment-content h5 { font-size: 13px; font-weight: 600; }
+.comment-content p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.comment-content span { font-size: 11px; color: var(--text-muted); }
+
+.comment-input-row {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+
+.comment-input-row input {
+  flex: 1;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  outline: none;
+  background: var(--bg);
+}
+
+.comment-input-row input:focus {
+  border-color: var(--primary);
+}
+
+.comment-input-row button {
+  padding: 8px 16px;
+  background: var(--primary);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Sidebar */
+.feed-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 96px;
+}
+
+.sidebar-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.sidebar-card h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--text-primary);
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.quick-link:hover {
+  background: var(--primary-50);
+  color: var(--primary);
+}
+
+.quick-link-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   RESOURCE LIBRARY
+   ============================================ */
+.resource-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.resource-category-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: var(--transition);
+}
+
+.resource-category-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.resource-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.resource-cat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.resource-cat-header h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.resource-cat-header p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.resource-list { display: flex; flex-direction: column; gap: 6px; }
+
+.resource-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.resource-item:hover {
+  background: var(--bg-hover);
+}
+
+.resource-item-icon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.resource-item-info {
+  flex: 1;
+}
+
+.resource-item-info h4 {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.resource-item-info p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.resource-item svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.add-resource-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--primary-50);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+  margin-top: 10px;
+  transition: var(--transition);
+}
+
+.add-resource-btn:hover {
+  background: var(--primary-100);
+}
+
+/* ============================================
+   VIDEOS SECTION
+   ============================================ */
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.video-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: var(--transition);
+}
+
+.video-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.video-placeholder {
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  gap: 10px;
+}
+
+.video-placeholder svg { width: 48px; height: 48px; opacity: 0.7; }
+.video-placeholder span { font-size: 13px; opacity: 0.6; }
+
+.video-card-info {
+  padding: 18px;
+}
+
+.video-card-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.video-card-info p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.youtube-channel-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  background: var(--bg-white);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  margin-top: 24px;
+}
+
+.youtube-channel-link:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: #FFF5F5;
+}
+
+/* ============================================
+   ORDERING SECTION
+   ============================================ */
+.ordering-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.ordering-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: var(--transition);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ordering-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.ordering-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+.ordering-card h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.ordering-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+
+.ordering-btn {
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  background: var(--primary);
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ordering-btn:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   CONTACT SECTION
+   ============================================ */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.contact-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.contact-card h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.contact-card > p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  outline: none;
+  background: var(--bg);
+  transition: var(--transition);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.contact-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.calendly-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 300px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border);
+  text-align: center;
+  padding: 24px;
+}
+
+.calendly-placeholder svg { width: 48px; height: 48px; color: var(--primary); }
+.calendly-placeholder h4 { font-size: 16px; font-weight: 600; }
+.calendly-placeholder p { font-size: 13px; color: var(--text-muted); max-width: 280px; }
+
+/* ============================================
+   MESSAGES (Phase 2 placeholder)
+   ============================================ */
+.messages-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 400px;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  padding: 48px;
+}
+
+.messages-placeholder svg { width: 56px; height: 56px; color: var(--primary); opacity: 0.6; }
+.messages-placeholder h3 { font-family: var(--font-display); font-size: 22px; }
+.messages-placeholder p { color: var(--text-secondary); font-size: 14px; max-width: 360px; }
+
+.phase-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--primary-50);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* ============================================
+   MY ACCOUNT
+   ============================================ */
+.account-layout {
+  max-width: 600px;
+}
+
+.account-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  margin-bottom: 20px;
+}
+
+.account-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.account-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.account-row:not(:last-child) {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.account-row label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.account-row span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-logout {
+  padding: 12px 24px;
+  background: white;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.btn-logout:hover {
+  background: #FFF5F5;
+}
+
+/* ============================================
+   ADMIN DASHBOARD
+   ============================================ */
+.admin-section { display: none; }
+.admin-section.active { display: block; }
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.admin-header h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.admin-tab {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  background: none;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.admin-tab.active {
+  background: var(--bg-white);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Admin Stats */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card .stat-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.stat-card .stat-change {
+  font-size: 12px;
+  color: var(--success);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* Admin User Table */
+.admin-table-wrapper {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table td {
+  padding: 14px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.admin-table tr:last-child td { border-bottom: none; }
+
+.admin-table tr:hover td { background: var(--bg-hover); }
+
+.status-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-approved { background: #F0FFF4; color: #276749; }
+.status-pending { background: #FEFCBF; color: #975A16; }
+.status-denied { background: #FFF5F5; color: #C53030; }
+
+.btn-approve {
+  padding: 5px 12px;
+  background: var(--success);
+  color: white;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-approve:hover { opacity: 0.9; }
+
+.btn-deny {
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-deny:hover { background: #FFF5F5; }
+
+.table-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Admin empty state */
+.admin-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+.admin-empty svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.4; }
+.admin-empty p { font-size: 14px; }
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  padding: 14px 20px;
+  background: var(--text-primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.info { background: var(--info); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .mobile-menu-btn { display: block; }
+
+  .nav-inner { height: 56px; }
+
+  .main-content { padding: 20px 16px; }
+
+  .feed-layout { grid-template-columns: 1fr; }
+  .feed-sidebar { display: none; }
+
+  .resource-categories { grid-template-columns: 1fr; }
+  .videos-grid { grid-template-columns: 1fr; }
+  .ordering-grid { grid-template-columns: 1fr; }
+  .contact-layout { grid-template-columns: 1fr; }
+
+  .admin-stats { grid-template-columns: 1fr 1fr; }
+
+  .admin-table-wrapper { overflow-x: auto; }
+  .admin-table { min-width: 600px; }
+
+  .auth-card { margin: 16px; padding: 32px 24px; }
+  .form-row { grid-template-columns: 1fr; }
+
+  .page-header h2 { font-size: 24px; }
+
+  .composer-toolbar { flex-direction: column; gap: 12px; align-items: stretch; }
+  .toolbar-right { justify-content: flex-end; }
+
+  .admin-header { flex-direction: column; gap: 16px; align-items: stretch; }
+  .admin-tabs { overflow-x: auto; }
+}
+
+@media (max-width: 480px) {
+  .feed-filters { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .filter-chip { white-space: nowrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==========================================
+     AUTH: LOGIN SCREEN
+     ========================================== -->
+<div id="auth-login" class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <h1>RepConnect</h1>
+      <p>Your practitioner resource hub</p>
+    </div>
+
+    <div id="login-error" class="auth-error"></div>
+
+    <form class="auth-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@practice.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-primary">Sign In</button>
+    </form>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="#" onclick="showSignup()">Create one</a>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     AUTH: SIGNUP SCREEN
+     ========================================== -->
+<div id="auth-signup" class="auth-wrapper hidden">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <h1>Join RepConnect</h1>
+      <p>Create your practitioner account</p>
+    </div>
+
+    <div id="signup-error" class="auth-error"></div>
+
+    <form class="auth-form" onsubmit="handleSignup(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="signup-first" placeholder="John" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="signup-last" placeholder="Smith" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="signup-email" placeholder="you@practice.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Create a password" required minlength="6">
+      </div>
+      <div class="form-group">
+        <label>NutriDyn ID</label>
+        <input type="text" id="signup-nutridyn-id" placeholder="Your NutriDyn account ID">
+        <a href="https://www.nutridyn.com" target="_blank" class="nutridyn-link">
+          Don't have a NutriDyn ID? → Create an account at nutridyn.com
+        </a>
+      </div>
+      <button type="submit" class="btn-primary">Create Account</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="#" onclick="showLogin()">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     AUTH: PENDING APPROVAL
+     ========================================== -->
+<div id="auth-pending" class="auth-wrapper hidden">
+  <div class="auth-card">
+    <div class="pending-message">
+      <div class="pending-icon">
+        <svg width="28" height="28" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h2>Account Pending Approval</h2>
+      <p>Your account has been created and is awaiting approval from Asher. You'll receive access once approved.</p>
+      <button class="btn-secondary" style="margin-top:24px" onclick="handleLogout()">Back to Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     MAIN APP
+     ========================================== -->
+<div id="app" class="app-wrapper">
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand" onclick="navigateTo('feed')">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span>RepConnect</span>
+      </a>
+
+      <div class="nav-links">
+        <button class="nav-link active" data-page="feed" onclick="navigateTo('feed')">Feed</button>
+        <button class="nav-link" data-page="resources" onclick="navigateTo('resources')">Resources</button>
+        <button class="nav-link" data-page="videos" onclick="navigateTo('videos')">Videos</button>
+        <button class="nav-link" data-page="ordering" onclick="navigateTo('ordering')">Ordering</button>
+        <button class="nav-link" data-page="contact" onclick="navigateTo('contact')">Contact</button>
+        <button class="nav-link" data-page="messages" onclick="navigateTo('messages')">Messages</button>
+        <button id="admin-nav-btn" class="nav-link hidden" data-page="admin" onclick="navigateTo('admin')">Admin</button>
+      </div>
+
+      <div class="nav-user">
+        <div id="user-avatar" class="nav-avatar" onclick="navigateTo('account')">A</div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Navigation -->
+  <div id="mobile-nav" class="mobile-nav" onclick="closeMobileMenu(event)">
+    <div class="mobile-nav-inner">
+      <button class="nav-link active" data-page="feed" onclick="navigateTo('feed');closeMobileMenu()">Feed</button>
+      <button class="nav-link" data-page="resources" onclick="navigateTo('resources');closeMobileMenu()">Resources</button>
+      <button class="nav-link" data-page="videos" onclick="navigateTo('videos');closeMobileMenu()">Videos</button>
+      <button class="nav-link" data-page="ordering" onclick="navigateTo('ordering');closeMobileMenu()">Ordering</button>
+      <button class="nav-link" data-page="contact" onclick="navigateTo('contact');closeMobileMenu()">Contact</button>
+      <button class="nav-link" data-page="messages" onclick="navigateTo('messages');closeMobileMenu()">Messages</button>
+      <button id="admin-nav-btn-mobile" class="nav-link hidden" data-page="admin" onclick="navigateTo('admin');closeMobileMenu()">Admin</button>
+      <button class="nav-link" data-page="account" onclick="navigateTo('account');closeMobileMenu()">My Account</button>
+      <button class="nav-link" style="color:var(--danger)" onclick="handleLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <main class="main-content">
+
+    <!-- ==========================================
+         FEED PAGE
+         ========================================== -->
+    <section id="page-feed" class="page-section active">
+      <div class="feed-layout">
+        <div class="feed-main">
+
+          <!-- Post Composer (Admin only) -->
+          <div id="post-composer" class="post-composer hidden">
+            <div class="composer-header" id="composer-collapsed">
+              <div class="composer-avatar">A</div>
+              <div class="composer-input" onclick="expandComposer()">Share an update, protocol, or resource...</div>
+            </div>
+            <div id="composer-expanded" class="composer-expanded">
+              <div class="composer-header">
+                <div class="composer-avatar">A</div>
+                <div style="font-weight:600;font-size:14px">Asher — New Post</div>
+              </div>
+              <input type="text" id="post-title" class="composer-title-input" placeholder="Post title (optional)">
+              <textarea id="post-body" placeholder="Write your post... Share a protocol, resource link, or update."></textarea>
+              <input type="text" id="post-link" class="composer-link-input" placeholder="Paste a link (Dropbox, YouTube, website...)">
+              <input type="text" id="post-embed" class="composer-link-input" placeholder="YouTube video URL for embed">
+              <div class="composer-toolbar">
+                <div class="toolbar-left">
+                  <button class="toolbar-btn" onclick="toggleInput('post-link')">🔗 Link</button>
+                  <button class="toolbar-btn" onclick="toggleInput('post-embed')">▶️ Video</button>
+                  <select id="post-category" class="composer-category-select">
+                    <option value="general">General</option>
+                    <option value="protocols">Protocols</option>
+                    <option value="product">Product Info</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="training">Training</option>
+                    <option value="labs">Labs</option>
+                    <option value="ordering">Ordering</option>
+                    <option value="announcements">Announcements</option>
+                  </select>
+                </div>
+                <div class="toolbar-right">
+                  <label class="pin-toggle" id="pin-toggle" onclick="togglePin()">📌 Pin</label>
+                  <button class="btn-post" onclick="createPost()">Post</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feed Filters -->
+          <div class="feed-filters">
+            <button class="filter-chip active" data-filter="all" onclick="filterFeed('all')">All</button>
+            <button class="filter-chip" data-filter="protocols" onclick="filterFeed('protocols')">Protocols</button>
+            <button class="filter-chip" data-filter="product" onclick="filterFeed('product')">Product</button>
+            <button class="filter-chip" data-filter="marketing" onclick="filterFeed('marketing')">Marketing</button>
+            <button class="filter-chip" data-filter="training" onclick="filterFeed('training')">Training</button>
+            <button class="filter-chip" data-filter="labs" onclick="filterFeed('labs')">Labs</button>
+            <button class="filter-chip" data-filter="ordering" onclick="filterFeed('ordering')">Ordering</button>
+            <button class="filter-chip" data-filter="announcements" onclick="filterFeed('announcements')">News</button>
+          </div>
+
+          <!-- Posts Container -->
+          <div id="posts-container"></div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="feed-sidebar">
+          <div class="sidebar-card">
+            <h3>Quick Links</h3>
+            <a href="https://nmcs.nutridyn.com" target="_blank" class="quick-link">
+              <div class="quick-link-icon" style="background:var(--primary-50)">🛒</div>
+              NutriDyn Store
+            </a>
+            <a href="#" class="quick-link" onclick="navigateTo('resources')">
+              <div class="quick-link-icon" style="background:#EBF8FF">📋</div>
+              Protocols Library
+            </a>
+            <a href="#" class="quick-link" onclick="navigateTo('ordering')">
+              <div class="quick-link-icon" style="background:#F0FFF4">🧮</div>
+              Profit Calculator
+            </a>
+            <a href="#" class="quick-link" onclick="navigateTo('contact')">
+              <div class="quick-link-icon" style="background:#FAF5FF">📞</div>
+              Book a Call
+            </a>
+          </div>
+
+          <div class="sidebar-card">
+            <h3>Community</h3>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span style="font-family:var(--font-display);font-size:28px;font-weight:700" id="sidebar-member-count">0</span>
+              <span style="font-size:13px;color:var(--text-muted)">members</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:var(--font-display);font-size:28px;font-weight:700" id="sidebar-post-count">0</span>
+              <span style="font-size:13px;color:var(--text-muted)">posts</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         RESOURCE LIBRARY PAGE
+         ========================================== -->
+    <section id="page-resources" class="page-section">
+      <div class="page-header">
+        <h2>Resource Library</h2>
+        <p>Everything you need, organized and ready to go</p>
+      </div>
+
+      <div class="resource-categories" id="resource-categories">
+        <!-- Protocols -->
+        <div class="resource-category-card">
+          <div class="resource-cat-header">
+            <div class="resource-cat-icon" style="background:#EBF8FF">📋</div>
+            <div>
+              <h3>Protocols & Treatment Guides</h3>
+              <p>Clinical protocols and treatment frameworks</p>
+            </div>
+          </div>
+          <div class="resource-list" id="resources-protocols">
+            <div class="resource-item" style="color:var(--text-muted);font-size:13px;padding:16px;text-align:center">
+              Resources coming soon — check back for updates!
+            </div>
+          </div>
+          <button class="add-resource-btn hidden admin-only" onclick="addResource('protocols')">+ Add Resource</button>
+        </div>
+
+        <!-- Product Info -->
+        <div class="resource-category-card">
+          <div class="resource-cat-header">
+            <div class="resource-cat-icon" style="background:#F0FFF4">💊</div>
+            <div>
+              <h3>Product Information</h3>
+              <p>Sell sheets, brochures, and calculators</p>
+            </div>
+          </div>
+          <div class="resource-list" id="resources-product">
+            <div class="resource-item" style="color:var(--text-muted);font-size:13px;padding:16px;text-align:center">
+              Resources coming soon — check back for updates!
+            </div>
+          </div>
+          <button class="add-resource-btn hidden admin-only" onclick="addResource('product')">+ Add Resource</button>
+        </div>
+
+        <!-- Marketing Materials -->
+        <div class="resource-category-card">
+          <div class="resource-cat-header">
+            <div class="resource-cat-icon" style="background:#FEFCBF">📄</div>
+            <div>
+              <h3>Marketing Materials</h3>
+              <p>Patient handouts, posters, and flyers</p>
+            </div>
+          </div>
+          <div class="resource-list" id="resources-marketing">
+            <div class="resource-item" style="color:var(--text-muted);font-size:13px;padding:16px;text-align:center">
+              Resources coming soon — check back for updates!
+            </div>
+          </div>
+          <button class="add-resource-btn hidden admin-only" onclick="addResource('marketing')">+ Add Resource</button>
+        </div>
+
+        <!-- Lab Resources -->
+        <div class="resource-category-card">
+          <div class="resource-cat-header">
+            <div class="resource-cat-icon" style="background:#FFF5F5">🔬</div>
+            <div>
+              <h3>Lab Resources</h3>
+              <p>Ordering guides and interpretation tools</p>
+            </div>
+          </div>
+          <div class="resource-list" id="resources-labs">
+            <div class="resource-item" style="color:var(--text-muted);font-size:13px;padding:16px;text-align:center">
+              Resources coming soon — check back for updates!
+            </div>
+          </div>
+          <button class="add-resource-btn hidden admin-only" onclick="addResource('labs')">+ Add Resource</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIDEOS PAGE
+         ========================================== -->
+    <section id="page-videos" class="page-section">
+      <div class="page-header">
+        <h2>Training Videos</h2>
+        <p>Education and training content to grow your practice</p>
+      </div>
+
+      <div class="videos-grid" id="videos-grid">
+        <div class="video-card">
+          <div class="video-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Videos coming soon</span>
+          </div>
+          <div class="video-card-info">
+            <h4>Content on the way</h4>
+            <p>Training videos, webinars, and educational content will appear here</p>
+          </div>
+        </div>
+      </div>
+
+      <a href="#" target="_blank" class="youtube-channel-link" id="youtube-link">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><polygon points="9.545 15.568 15.818 12 9.545 8.432" fill="white"/></svg>
+        Visit Full YouTube Channel →
+      </a>
+    </section>
+
+    <!-- ==========================================
+         ORDERING PAGE
+         ========================================== -->
+    <section id="page-ordering" class="page-section">
+      <div class="page-header">
+        <h2>Ordering & Tools</h2>
+        <p>Quick access to ordering and practice tools</p>
+      </div>
+
+      <div class="ordering-grid">
+        <a href="https://nmcs.nutridyn.com" target="_blank" class="ordering-card">
+          <div class="ordering-icon" style="background:var(--primary-50)">🛒</div>
+          <h3>NutriDyn Store</h3>
+          <p>Order supplements directly through the practitioner portal</p>
+          <div class="ordering-btn">Open Store →</div>
+        </a>
+
+        <div class="ordering-card" onclick="window.open('#','_blank')">
+          <div class="ordering-icon" style="background:#F0FFF4">🧮</div>
+          <h3>Profit Calculator</h3>
+          <p>Calculate your margins and pricing for NutriDyn products</p>
+          <div class="ordering-btn">Open Calculator →</div>
+        </div>
+
+        <div class="ordering-card" onclick="window.open('#','_blank')">
+          <div class="ordering-icon" style="background:#EBF8FF">📝</div>
+          <h3>Patient Intake Forms</h3>
+          <p>Digital intake forms with smart questionnaires</p>
+          <div class="ordering-btn">Open Forms →</div>
+        </div>
+
+        <div class="ordering-card" onclick="window.open('#','_blank')">
+          <div class="ordering-icon" style="background:#FAF5FF">🔬</div>
+          <h3>Lab Analysis Tool</h3>
+          <p>Upload labs and get supplement recommendations</p>
+          <div class="ordering-btn">Open Lab Tool →</div>
+        </div>
+
+        <a href="https://www.nutridyn.com" target="_blank" class="ordering-card">
+          <div class="ordering-icon" style="background:#FFF5EB">🌐</div>
+          <h3>NutriDyn Website</h3>
+          <p>Full NutriDyn product catalog and company info</p>
+          <div class="ordering-btn">Visit Site →</div>
+        </a>
+
+        <div class="ordering-card" onclick="navigateTo('resources')">
+          <div class="ordering-icon" style="background:#FEFCBF">📦</div>
+          <h3>Product Bundles</h3>
+          <p>Pre-configured supplement bundles for common protocols</p>
+          <div class="ordering-btn">View Bundles →</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         CONTACT PAGE
+         ========================================== -->
+    <section id="page-contact" class="page-section">
+      <div class="page-header">
+        <h2>Contact Asher</h2>
+        <p>Have a question or need support? I'm here to help.</p>
+      </div>
+
+      <div class="contact-layout">
+        <div class="contact-card">
+          <h3>Send a Message</h3>
+          <p>I'll get back to you as quickly as possible</p>
+          <form class="contact-form" onsubmit="handleContactForm(event)">
+            <input type="text" id="contact-subject" placeholder="Subject" required>
+            <textarea id="contact-message" placeholder="How can I help you?" required></textarea>
+            <button type="submit" class="btn-primary">Send Message</button>
+          </form>
+        </div>
+
+        <div class="contact-card">
+          <h3>Book a Call</h3>
+          <p>Schedule time directly on my calendar</p>
+          <div class="calendly-placeholder" id="calendly-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <h4>Calendar Booking</h4>
+            <p>Your Calendly link will be embedded here. Share your Calendly URL to activate.</p>
+            <input type="text" id="calendly-url" placeholder="Paste your Calendly URL" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;width:100%;max-width:300px;outline:none;text-align:center" class="hidden admin-only">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         MESSAGES PAGE (Phase 2)
+         ========================================== -->
+    <section id="page-messages" class="page-section">
+      <div class="page-header">
+        <h2>Messages</h2>
+        <p>Private conversations with Asher</p>
+      </div>
+
+      <div class="messages-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <h3>Direct Messaging</h3>
+        <p>Private messaging is coming in Phase 2. In the meantime, use the Contact page to reach Asher directly.</p>
+        <div class="phase-badge">🚀 Coming in Phase 2</div>
+        <button class="btn-primary" style="margin-top:8px" onclick="navigateTo('contact')">Go to Contact Page</button>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         MY ACCOUNT PAGE
+         ========================================== -->
+    <section id="page-account" class="page-section">
+      <div class="page-header">
+        <h2>My Account</h2>
+        <p>Manage your profile and preferences</p>
+      </div>
+
+      <div class="account-layout">
+        <div class="account-card">
+          <h3>Profile Information</h3>
+          <div class="account-row">
+            <label>Name</label>
+            <span id="account-name">—</span>
+          </div>
+          <div class="account-row">
+            <label>Email</label>
+            <span id="account-email">—</span>
+          </div>
+          <div class="account-row">
+            <label>NutriDyn ID</label>
+            <span id="account-nutridyn">—</span>
+          </div>
+          <div class="account-row">
+            <label>Status</label>
+            <span class="status-badge status-approved" id="account-status">Active</span>
+          </div>
+        </div>
+
+        <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ADMIN DASHBOARD
+         ========================================== -->
+    <section id="page-admin" class="page-section">
+      <div class="admin-header">
+        <h2>Admin Dashboard</h2>
+        <div class="admin-tabs">
+          <button class="admin-tab active" onclick="switchAdminTab('overview')">Overview</button>
+          <button class="admin-tab" onclick="switchAdminTab('users')">Users</button>
+          <button class="admin-tab" onclick="switchAdminTab('pending')">Pending</button>
+        </div>
+      </div>
+
+      <!-- Overview -->
+      <div id="admin-overview" class="admin-section active">
+        <div class="admin-stats">
+          <div class="stat-card">
+            <div class="stat-label">Total Members</div>
+            <div class="stat-value" id="stat-members">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending Approval</div>
+            <div class="stat-value" id="stat-pending">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Posts</div>
+            <div class="stat-value" id="stat-posts">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Comments</div>
+            <div class="stat-value" id="stat-comments">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div id="admin-users" class="admin-section">
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>NutriDyn ID</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pending -->
+      <div id="admin-pending" class="admin-section">
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>NutriDyn ID</th>
+                <th>Requested</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pending-table-body"></tbody>
+          </table>
+        </div>
+        <div id="no-pending" class="admin-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <p>No pending approval requests</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ==========================================
+     ADD RESOURCE MODAL
+     ========================================== -->
+<div id="resource-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center">
+  <div style="background:white;border-radius:16px;padding:32px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto">
+    <h3 style="font-family:var(--font-display);font-size:20px;margin-bottom:20px">Add Resource</h3>
+    <form onsubmit="saveResource(event)" style="display:flex;flex-direction:column;gap:14px">
+      <input type="hidden" id="resource-category-input">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="resource-title" placeholder="Resource name" required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" id="resource-desc" placeholder="Brief description">
+      </div>
+      <div class="form-group">
+        <label>Dropbox Link</label>
+        <input type="url" id="resource-url" placeholder="https://dropbox.com/..." required>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn-primary" style="flex:1">Add Resource</button>
+        <button type="button" class="btn-secondary" style="flex:1" onclick="closeResourceModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ============================================
+// REPCONNECT — SUPABASE POWERED
+// ============================================
+const SUPABASE_URL = 'https://scoglxdixxbxvbesimva.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjb2dseGRpeHhieHZiZXNpbXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMTk4OTgsImV4cCI6MjA4Nzg5NTg5OH0.2WRwED519qd0Wuqaxh5lDqv9sI7Kz4YklRI9Q8iriZ8';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Backwards compat helpers (keep localStorage as fallback cache)
+const APP_KEY = 'repconnect_';
+function getStore(key) {
+  try { return JSON.parse(localStorage.getItem(APP_KEY + key)) || null; } catch { return null; }
+}
+function setStore(key, val) {
+  localStorage.setItem(APP_KEY + key, JSON.stringify(val));
+}
+
+function initData() { /* Data lives in Supabase now */ }
+
+// Auth State
+let currentUser = null;
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('email', email)
+    .eq('password_hash', password)
+    .single();
+
+  if (error || !data) {
+    showAuthError('login', 'Invalid email or password');
+    return;
+  }
+
+  if (data.status === 'pending') {
+    currentUser = data;
+    showScreen('auth-pending');
+    return;
+  }
+
+  if (data.status === 'denied') {
+    showAuthError('login', 'Your account has not been approved');
+    return;
+  }
+
+  // Update last login
+  await supabase.from('profiles').update({ last_login: new Date().toISOString() }).eq('id', data.id);
+
+  currentUser = data;
+  setStore('currentUser', data);
+  enterApp();
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const firstName = document.getElementById('signup-first').value;
+  const lastName = document.getElementById('signup-last').value;
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  const nutridynId = document.getElementById('signup-nutridyn-id').value;
+
+  if (!nutridynId.trim()) {
+    showAuthError('signup', 'A NutriDyn ID is required. Visit nutridyn.com to create an account.');
+    return;
+  }
+
+  // Check if email already exists
+  const { data: existing } = await supabase.from('profiles').select('id').eq('email', email).single();
+  if (existing) {
+    showAuthError('signup', 'An account with this email already exists');
+    return;
+  }
+
+  const { data, error } = await supabase.from('profiles').insert({
+    email,
+    password_hash: password,
+    first_name: firstName,
+    last_name: lastName,
+    nutridyn_id: nutridynId,
+    role: 'member',
+    status: 'pending'
+  }).select().single();
+
+  if (error) {
+    showAuthError('signup', 'Error creating account. Please try again.');
+    return;
+  }
+
+  currentUser = data;
+  showScreen('auth-pending');
+}
+
+function handleLogout() {
+  currentUser = null;
+  localStorage.removeItem(APP_KEY + 'currentUser');
+  document.getElementById('app').classList.remove('active');
+  showScreen('auth-login');
+  // Clear form fields
+  document.querySelectorAll('.auth-form input').forEach(i => i.value = '');
+}
+
+function showAuthError(form, msg) {
+  const el = document.getElementById(form + '-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+function showScreen(id) {
+  ['auth-login', 'auth-signup', 'auth-pending'].forEach(s => {
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+}
+
+function showLogin() { showScreen('auth-login'); }
+function showSignup() { showScreen('auth-signup'); }
+
+function enterApp() {
+  ['auth-login', 'auth-signup', 'auth-pending'].forEach(s => {
+    document.getElementById(s).classList.add('hidden');
+  });
+  document.getElementById('app').classList.add('active');
+
+  // Set user info (Supabase uses snake_case)
+  const fn = currentUser.first_name || currentUser.firstName || '';
+  const ln = currentUser.last_name || currentUser.lastName || '';
+  const initials = (fn[0] + ln[0]).toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('account-name').textContent = fn + ' ' + ln;
+  document.getElementById('account-email').textContent = currentUser.email;
+  document.getElementById('account-nutridyn').textContent = currentUser.nutridyn_id || currentUser.nutridynId || '—';
+
+  // Admin features
+  const isAdmin = currentUser.role === 'admin';
+  document.getElementById('post-composer').classList.toggle('hidden', !isAdmin);
+  document.getElementById('admin-nav-btn').classList.toggle('hidden', !isAdmin);
+  document.getElementById('admin-nav-btn-mobile').classList.toggle('hidden', !isAdmin);
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.classList.toggle('hidden', !isAdmin);
+  });
+
+  renderFeed();
+  updateStats();
+  renderResources();
+  navigateTo('feed');
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+function navigateTo(page) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.classList.toggle('active', l.dataset.page === page);
+  });
+
+  if (page === 'admin') updateAdminDashboard();
+  window.scrollTo(0, 0);
+}
+
+function toggleMobileMenu() {
+  document.getElementById('mobile-nav').classList.toggle('active');
+}
+
+function closeMobileMenu(e) {
+  if (e && e.target !== document.getElementById('mobile-nav')) return;
+  document.getElementById('mobile-nav').classList.remove('active');
+}
+
+// ============================================
+// FEED & POSTS
+// ============================================
+function expandComposer() {
+  document.getElementById('composer-collapsed').style.display = 'none';
+  document.getElementById('composer-expanded').classList.add('active');
+}
+
+function collapseComposer() {
+  document.getElementById('composer-collapsed').style.display = 'flex';
+  document.getElementById('composer-expanded').classList.remove('active');
+  document.getElementById('post-title').value = '';
+  document.getElementById('post-body').value = '';
+  document.getElementById('post-link').value = '';
+  document.getElementById('post-embed').value = '';
+  document.getElementById('post-link').classList.remove('active');
+  document.getElementById('post-embed').classList.remove('active');
+  document.getElementById('pin-toggle').classList.remove('active');
+}
+
+function toggleInput(id) {
+  document.getElementById(id).classList.toggle('active');
+}
+
+function togglePin() {
+  document.getElementById('pin-toggle').classList.toggle('active');
+}
+
+async function createPost() {
+  const title = document.getElementById('post-title').value.trim();
+  const body = document.getElementById('post-body').value.trim();
+  const link = document.getElementById('post-link').value.trim();
+  const embed = document.getElementById('post-embed').value.trim();
+  const category = document.getElementById('post-category').value;
+  const pinned = document.getElementById('pin-toggle').classList.contains('active');
+
+  if (!body) { showToast('Please write something in your post', 'error'); return; }
+
+  const { error } = await supabase.from('posts').insert({
+    title: title || null,
+    body,
+    category,
+    pinned,
+    author_id: currentUser.id,
+    link: link || null,
+    embed: extractYouTubeId(embed) || null
+  });
+
+  if (error) { showToast('Error creating post', 'error'); return; }
+
+  collapseComposer();
+  renderFeed();
+  updateStats();
+  showToast('Post published!', 'success');
+}
+
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s]+)/);
+  return match ? match[1] : null;
+}
+
+async function renderFeed(filter = 'all') {
+  // Fetch posts with author info
+  let query = supabase.from('posts').select('*, profiles(first_name, last_name)').order('pinned', { ascending: false }).order('created_at', { ascending: false });
+  if (filter !== 'all') query = query.eq('category', filter);
+  const { data: posts, error } = await query;
+
+  // Fetch all comments
+  const { data: allComments } = await supabase.from('comments').select('*').order('created_at', { ascending: true });
+
+  const container = document.getElementById('posts-container');
+
+  if (!posts || posts.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:60px 24px;color:var(--text-muted)"><p style="font-size:15px">No posts yet in this category</p></div>';
+    return;
+  }
+
+  container.innerHTML = posts.map(post => {
+    const authorName = post.profiles ? post.profiles.first_name : 'Asher';
+    const catClass = 'cat-' + post.category;
+    const catLabel = {
+      protocols: 'Protocols', product: 'Product', marketing: 'Marketing',
+      training: 'Training', labs: 'Labs', ordering: 'Ordering',
+      announcements: 'Announcements', general: 'General'
+    }[post.category] || 'General';
+
+    const timeAgo = getTimeAgo(post.created_at);
+    const postComments = (allComments || []).filter(c => c.post_id === post.id);
+    const commentCount = postComments.length;
+
+    let embedHtml = '';
+    if (post.embed) {
+      embedHtml = '<div class="post-embed"><iframe src="https://www.youtube.com/embed/' + post.embed + '" allowfullscreen></iframe></div>';
+    }
+
+    let linkHtml = '';
+    if (post.link) {
+      linkHtml = '<a href="' + post.link + '" target="_blank" class="post-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' + (post.link.length > 60 ? post.link.substring(0, 60) + '...' : post.link) + '</a>';
+    }
+
+    let pinnedBadge = post.pinned ? '<div class="post-pinned-badge">📌 Pinned Post</div>' : '';
+
+    let deleteBtn = currentUser && currentUser.role === 'admin' ?
+      '<button class="post-action" onclick="deletePost(\'' + post.id + '\')" style="margin-left:auto;color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"/></svg></button>' : '';
+
+    return '<div class="post-card ' + (post.pinned ? 'pinned' : '') + '" data-category="' + post.category + '">' +
+      pinnedBadge +
+      '<div class="post-header"><div class="post-author"><div class="post-author-avatar">' + authorName[0] + '</div><div class="post-author-info"><h4>' + authorName + '</h4><span>' + timeAgo + '</span></div></div><span class="post-category ' + catClass + '">' + catLabel + '</span></div>' +
+      (post.title ? '<div class="post-title">' + escapeHtml(post.title) + '</div>' : '') +
+      '<div class="post-body">' + linkifyText(escapeHtml(post.body)) + '</div>' +
+      embedHtml + linkHtml +
+      '<div class="post-actions"><button class="post-action" onclick="toggleComments(\'' + post.id + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' + commentCount + ' Comment' + (commentCount !== 1 ? 's' : '') + '</button>' + deleteBtn + '</div>' +
+      '<div class="post-comments" id="comments-' + post.id + '">' +
+      postComments.map(c => '<div class="comment"><div class="comment-avatar">' + c.author_name[0] + '</div><div class="comment-content"><h5>' + escapeHtml(c.author_name) + '</h5><p>' + escapeHtml(c.body) + '</p><span>' + getTimeAgo(c.created_at) + '</span></div></div>').join('') +
+      '<div class="comment-input-row"><input type="text" id="comment-input-' + post.id + '" placeholder="Write a comment..." onkeypress="if(event.key===\'Enter\')addComment(\'' + post.id + '\')"><button onclick="addComment(\'' + post.id + '\')">Post</button></div></div></div>';
+  }).join('');
+
+  // Update sidebar counts
+  const { count: postCount } = await supabase.from('posts').select('*', { count: 'exact', head: true });
+  const { count: memberCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'approved');
+  document.getElementById('sidebar-post-count').textContent = postCount || 0;
+  document.getElementById('sidebar-member-count').textContent = memberCount || 0;
+}
+
+function filterFeed(filter) {
+  document.querySelectorAll('.filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === filter);
+  });
+  renderFeed(filter);
+}
+
+function toggleComments(postId) {
+  document.getElementById('comments-' + postId).classList.toggle('active');
+}
+
+async function addComment(postId) {
+  const input = document.getElementById('comment-input-' + postId);
+  const text = input.value.trim();
+  if (!text) return;
+
+  const fn = currentUser.first_name || currentUser.firstName || '';
+  const ln = currentUser.last_name || currentUser.lastName || '';
+
+  await supabase.from('comments').insert({
+    post_id: postId,
+    author_id: currentUser.id,
+    author_name: fn + ' ' + ln,
+    body: text
+  });
+
+  input.value = '';
+  renderFeed();
+  document.getElementById('comments-' + postId).classList.add('active');
+  updateStats();
+}
+
+async function deletePost(postId) {
+  if (!confirm('Delete this post?')) return;
+  await supabase.from('posts').delete().eq('id', postId);
+  renderFeed();
+  updateStats();
+  showToast('Post deleted', 'info');
+}
+
+// ============================================
+// RESOURCES
+// ============================================
+function addResource(category) {
+  document.getElementById('resource-category-input').value = category;
+  document.getElementById('resource-modal').style.display = 'flex';
+}
+
+function closeResourceModal() {
+  document.getElementById('resource-modal').style.display = 'none';
+}
+
+async function saveResource(e) {
+  e.preventDefault();
+  const category = document.getElementById('resource-category-input').value;
+  const title = document.getElementById('resource-title').value.trim();
+  const desc = document.getElementById('resource-desc').value.trim();
+  const url = document.getElementById('resource-url').value.trim();
+
+  await supabase.from('resources').insert({ title, description: desc, url, category });
+
+  renderResources();
+  closeResourceModal();
+  showToast('Resource added!', 'success');
+
+  document.getElementById('resource-title').value = '';
+  document.getElementById('resource-desc').value = '';
+  document.getElementById('resource-url').value = '';
+}
+
+async function renderResources() {
+  const { data: resources } = await supabase.from('resources').select('*').order('created_at', { ascending: false });
+
+  const catColors = {
+    protocols: '#2B6CB0',
+    product: '#276749',
+    marketing: '#975A16',
+    labs: '#C53030'
+  };
+
+  ['protocols', 'product', 'marketing', 'labs'].forEach(cat => {
+    const container = document.getElementById('resources-' + cat);
+    const items = (resources || []).filter(r => r.category === cat);
+
+    if (items.length === 0) {
+      container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:16px;text-align:center">Resources coming soon — check back for updates!</div>';
+      return;
+    }
+
+    container.innerHTML = items.map(r => 
+      '<a href="' + r.url + '" target="_blank" class="resource-item"><div class="resource-item-icon" style="background:' + catColors[cat] + '"></div><div class="resource-item-info"><h4>' + escapeHtml(r.title) + '</h4>' + (r.description ? '<p>' + escapeHtml(r.description) + '</p>' : '') + '</div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>'
+    ).join('');
+  });
+}
+
+// ============================================
+// ADMIN DASHBOARD
+// ============================================
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('admin-' + tab).classList.add('active');
+}
+
+async function updateAdminDashboard() {
+  const { data: users } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+  const { data: posts } = await supabase.from('posts').select('*');
+  const { count: commentCount } = await supabase.from('comments').select('*', { count: 'exact', head: true });
+
+  const approved = (users || []).filter(u => u.status === 'approved');
+  const pending = (users || []).filter(u => u.status === 'pending');
+
+  document.getElementById('stat-members').textContent = approved.length;
+  document.getElementById('stat-pending').textContent = pending.length;
+  document.getElementById('stat-posts').textContent = (posts || []).length;
+  document.getElementById('stat-comments').textContent = commentCount || 0;
+
+  // Users table
+  document.getElementById('users-table-body').innerHTML = approved.map(u =>
+    '<tr><td><strong>' + escapeHtml(u.first_name) + ' ' + escapeHtml(u.last_name) + '</strong></td><td>' + escapeHtml(u.email) + '</td><td>' + escapeHtml(u.nutridyn_id || '—') + '</td><td>' + formatDate(u.created_at) + '</td><td><span class="status-badge status-approved">Active</span></td><td>' +
+    (u.role !== 'admin' ? '<div class="table-actions"><button class="btn-deny" onclick="removeUser(\'' + u.id + '\')">Remove</button></div>' : '<span style="font-size:12px;color:var(--text-muted)">Admin</span>') +
+    '</td></tr>'
+  ).join('');
+
+  // Pending table
+  if (pending.length === 0) {
+    document.getElementById('pending-table-body').innerHTML = '';
+    document.getElementById('no-pending').style.display = 'block';
+  } else {
+    document.getElementById('no-pending').style.display = 'none';
+    document.getElementById('pending-table-body').innerHTML = pending.map(u =>
+      '<tr><td><strong>' + escapeHtml(u.first_name) + ' ' + escapeHtml(u.last_name) + '</strong></td><td>' + escapeHtml(u.email) + '</td><td>' + escapeHtml(u.nutridyn_id || '—') + '</td><td>' + formatDate(u.created_at) + '</td><td><div class="table-actions"><button class="btn-approve" onclick="approveUser(\'' + u.id + '\')">Approve</button><button class="btn-deny" onclick="denyUser(\'' + u.id + '\')">Deny</button></div></td></tr>'
+    ).join('');
+  }
+}
+
+async function approveUser(userId) {
+  await supabase.from('profiles').update({ status: 'approved' }).eq('id', userId);
+  updateAdminDashboard();
+  updateStats();
+  showToast('User approved!', 'success');
+}
+
+async function denyUser(userId) {
+  await supabase.from('profiles').update({ status: 'denied' }).eq('id', userId);
+  updateAdminDashboard();
+  showToast('User denied', 'info');
+}
+
+async function removeUser(userId) {
+  if (!confirm('Remove this user?')) return;
+  await supabase.from('profiles').delete().eq('id', userId);
+  updateAdminDashboard();
+  updateStats();
+  showToast('User removed', 'info');
+}
+
+async function updateStats() {
+  const { count: postCount } = await supabase.from('posts').select('*', { count: 'exact', head: true });
+  const { count: memberCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'approved');
+  document.getElementById('sidebar-post-count').textContent = postCount || 0;
+  document.getElementById('sidebar-member-count').textContent = memberCount || 0;
+}
+
+// ============================================
+// CONTACT FORM
+// ============================================
+async function handleContactForm(e) {
+  e.preventDefault();
+  const subject = document.getElementById('contact-subject').value;
+  const message = document.getElementById('contact-message').value;
+  
+  await supabase.from('contact_submissions').insert({
+    user_id: currentUser ? currentUser.id : null,
+    subject,
+    message
+  });
+  
+  showToast('Message sent! Asher will get back to you soon.', 'success');
+  document.getElementById('contact-subject').value = '';
+  document.getElementById('contact-message').value = '';
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function linkifyText(text) {
+  return text.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank">$1</a>');
+}
+
+function getTimeAgo(dateStr) {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const seconds = Math.floor((now - date) / 1000);
+
+  if (seconds < 60) return 'just now';
+  if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+  if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+  if (seconds < 604800) return Math.floor(seconds / 86400) + 'd ago';
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ============================================
+// INIT
+// ============================================
+initData();
+
+// Check for existing session from localStorage cache
+async function checkSession() {
+  const savedUser = getStore('currentUser');
+  if (savedUser && savedUser.id) {
+    const { data: user } = await supabase.from('profiles').select('*').eq('id', savedUser.id).single();
+    if (user && user.status === 'approved') {
+      currentUser = user;
+      document.getElementById('auth-login').classList.add('hidden');
+      enterApp();
+      return;
+    }
+  }
+}
+
+checkSession();
+</script>
+
+</body>
+</html>
